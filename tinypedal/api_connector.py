@@ -32,8 +32,15 @@ from .adapter import (
     rf2_connector,
     rf2_reader,
     rf2_restapi,
+    iracing_connector,
+    iracing_reader,
 )
-from .const_api import API_LMU_NAME, API_LMULEGACY_NAME, API_RF2_NAME
+from .const_api import (
+    API_LMU_NAME,
+    API_LMULEGACY_NAME,
+    API_RF2_NAME,
+    API_IRACING_NAME,
+)
 from .validator import bytes_to_str
 
 
@@ -177,3 +184,38 @@ class SimLMULegacy(SimRF2):
     def __init__(self):
         self.shmmapi = rf2_connector.RF2Info()
         self.restapi = restapi_connector.RestAPIInfo(rf2_restapi.TASKSET_LMU, rf2_restapi.RestAPIData())
+
+
+class SimIRacing(Connector):
+    """iRacing - iRacing SDK API"""
+
+    __slots__ = (
+        "sdk_connector",
+        "sdk_reader",
+    )
+    NAME = API_IRACING_NAME
+
+    def __init__(self):
+        self.sdk_connector = iracing_connector.IRacingConnector()
+        self.sdk_reader = iracing_reader.IRacingReader(self.sdk_connector)
+
+    def start(self):
+        """Start iRacing connector"""
+        self.sdk_connector.start()
+
+    def stop(self):
+        """Stop iRacing connector"""
+        self.sdk_connector.stop()
+
+    def reader(self) -> APIDataReader:
+        """Return APIDataReader with iRacing telemetry"""
+        # Note: For now, returning basic reader
+        # TODO: Implement IRacingState, IRacingBrake, etc. reader classes
+        # if more advanced data processing is needed
+        return APIDataReader()
+
+    def setup(self, config: dict):
+        """Setup iRacing API parameters"""
+        # iRacing SDK has minimal configuration
+        # Most settings are handled by pyirsdk
+        pass
