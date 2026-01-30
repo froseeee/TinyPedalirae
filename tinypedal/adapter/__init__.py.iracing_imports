@@ -1,0 +1,5 @@
+# Add these imports to tinypedal/adapter/__init__.py in the appropriate section:
+
+# At the top with other imports:
+from . import iracing_connector
+from . import iracing_reader
